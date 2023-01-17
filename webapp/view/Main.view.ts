@@ -1,3 +1,4 @@
+import Button from "sap/m/Button";
 import Page from "sap/m/Page";
 import Text from "sap/m/Text";
 import JSView from "sap/ui/core/mvc/JSView";
@@ -30,43 +31,52 @@ sap.ui.jsview("com.myorg.myapp.view.Main",{
                 })
             ],
             rowsUpdated : function(){
-                const dTable = document.querySelector("#"+table.getId());
-                const cellArr = cellMerge(1);
-                let count = 1;
-                dTable.querySelector(`.sapUiTableContentRow td[rowspan]`)?.removeAttribute("rowspan");
-                dTable.querySelectorAll(`.sapUiTableContentRow td[hideColumn="true"]`)?.forEach(cell=>{
-                    cell.removeAttribute("style");
-                    cell.removeAttribute("hideColumn");
-                });
-                function cellMerge(index : number){
+                
+                const domTable = document.querySelector("#"+table.getId());
+                removeRowspan(domTable);
+                cellMerge(getCellArray(1,domTable));
+                
+                function removeRowspan(table : Element){
+                    table.querySelector(`.sapUiTableContentRow td[rowspan]`)?.removeAttribute("rowspan");
+                    table.querySelectorAll(`.sapUiTableContentRow td[hideColumn="true"]`)?.forEach(cell=>{
+                        cell.removeAttribute("style");
+                        cell.removeAttribute("hideColumn");
+                    });
+                }
+                
+                function getCellArray(index : number,table : Element){
                     const cellArr : cellObject[] = [];
-                    const cells = dTable.querySelectorAll(`.sapUiTableContentRow td[aria-colindex="${index}"].sapUiTableCell`);
+                    const cells = table.querySelectorAll(`.sapUiTableContentRow td[aria-colindex="${index}"].sapUiTableCell`);
                     cells.forEach(cell=>{
                         const span = cell.querySelector("span")
-                        if(span.textContent){
-                            cellArr.push({id : cell.id,text : span.textContent});
-                        }
+                        if(span.textContent) cellArr.push({id : cell.id,text : span.textContent});
                     })
                     return cellArr;
                 }
-    
-                while(cellArr.length){
-                    const cellObject = cellArr.pop();
-                    const cell = document.querySelector("#"+cellObject.id) as HTMLElement;
-                    if(cellArr.length===0){
-                        cell.setAttribute("rowspan",count.toString());
-                        break;
-                    }
-    
-                    if(cellArr[cellArr.length-1].text === cellObject.text){
-                        count++;
-                        cell.setAttribute("hideColumn", "true");
-                        cell.setAttribute("style", "display : none");
-                    }else{
+                
+                function cellMerge(cellArray : cellObject[]){
+                    let count = 1;
+                
+                    while(cellArray.length){
+                        const cellObject = cellArray.pop();
+                        const cell = document.querySelector("#"+cellObject.id) as HTMLElement;
+                        if(cellArray.length===0){
+                            cell.setAttribute("rowspan",count.toString());
+                            break;
+                        }
+                       
+                        if(cellArray[cellArray.length-1].text === cellObject.text){
+                            count++;
+                            cell.setAttribute("hideColumn", "true");
+                            cell.setAttribute("style", "display : none");
+                            continue;
+                        }
+
                         cell.setAttribute("rowspan",count.toString());
                         count = 1;  
                     }
                 }
+              
             }
         });
 

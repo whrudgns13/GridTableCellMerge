@@ -1,7 +1,9 @@
-import MessageBox from "sap/m/MessageBox";
 import BaseController from "./BaseController";
 import formatter from "../model/formatter";
 import JSONModel from "sap/ui/model/json/JSONModel";
+import Table from "sap/ui/table/Table";
+import Column from "sap/ui/table/Column";
+import Text from "sap/m/Text";
 
 /**
  * @namespace com.myorg.myapp.controller
@@ -17,4 +19,7 @@ export default class Main extends BaseController {
 		this.setModel(new JSONModel(posts),"ViewModel");
 	}
 
+	public createTable(){
+		
+	}
 }
